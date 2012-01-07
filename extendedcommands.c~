@@ -974,7 +974,7 @@ void show_advanced_menu()
                             "Wipe Battery Stats",
                             "Report Error",
                             "Key Test",
-                            "Show Log",
+                            "Dildo",
 #ifndef BOARD_HAS_SMALL_RECOVERY
                             "Partition SD Card",
                             "Fix Permissions",
@@ -1038,6 +1038,7 @@ void show_advanced_menu()
             }
             case 5:
             {
+                vibrate(5000);
                 ui_printlogtail(12);
                 break;
             }
