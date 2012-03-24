@@ -46,7 +46,7 @@ static unsigned ev_dev_count = 0;
 static unsigned ev_misc_count = 0;
 
 #define VIBRATOR_TIMEOUT_FILE	"/sys/class/timed_output/vibrator/enable"
-#define VIBRATOR_TIME_MS	50
+#define VIBRATOR_TIME_MS	25
 
 int vibrate(int timeout_ms) {
     char str[20];
@@ -91,10 +91,11 @@ int ev_init(ev_callback input_cb, void *data)
             /* TODO: add ability to specify event masks. For now, just assume
              * that only EV_KEY and EV_REL event types are ever needed. */
              //commented out so the touch panel events are allowed through
-            //if (!test_bit(EV_KEY, ev_bits) && !test_bit(EV_REL, ev_bits)) {
-            //    close(fd);
-            //    continue;
-            //}
+             printf("Loading (%s): %i\n", de->d_name, ev_bits);
+            if (!test_bit(EV_KEY, ev_bits) && !test_bit(EV_REL, ev_bits) && !test_bit(EV_ABS, ev_bits)) {
+                close(fd);
+                continue;
+            }
 
             ev_fds[ev_count].fd = fd;
             ev_fds[ev_count].events = POLLIN;
