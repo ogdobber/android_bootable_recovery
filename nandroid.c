@@ -288,7 +288,7 @@ int nandroid_backup(const char* backup_path)
 
     if (0 != stat("/sdcard/.android_secure", &s))
     {
-        ui_print("No /sdcard/.android_secure found. Skipping backup of applications on external storage.\n");
+        ui_print("no /sdcard/.android_secure found. skipping backup of applications on external storage.\n");
     }
     else
     {
@@ -302,27 +302,27 @@ int nandroid_backup(const char* backup_path)
     vol = volume_for_path("/sd-ext");
     if (vol == NULL || 0 != stat(vol->device, &s))
     {
-        ui_print("No sd-ext found. Skipping backup of sd-ext.\n");
+        ui_print("no sd-ext found. skipping backup of sd-ext.\n");
     }
     else
     {
         if (0 != ensure_path_mounted("/sd-ext"))
-            ui_print("Could not mount sd-ext. sd-ext backup may not be supported on this device. Skipping backup of sd-ext.\n");
+            ui_print("could not mount sd-ext. sd-ext backup may not be supported on this device. Skipping backup of sd-ext.\n");
         else if (0 != (ret = nandroid_backup_partition(backup_path, "/sd-ext")))
             return ret;
     }
 
-    ui_print("Generating md5 sum...\n");
+    ui_print("generating md5 sum...\n");
     sprintf(tmp, "nandroid-md5.sh %s", backup_path);
     if (0 != (ret = __system(tmp))) {
-        ui_print("Error while generating md5 sum!\n");
+        ui_print("error while generating md5 sum!\n");
         return ret;
     }
     
     sync();
     ui_set_background(BACKGROUND_ICON_NONE);
     ui_reset_progress();
-    ui_print("\nBackup complete!\n");
+    ui_print("\nbackup complete!\n");
     return 0;
 }
 
@@ -347,7 +347,7 @@ static int tar_extract_wrapper(const char* backup_file_image, const char* backup
     char path[PATH_MAX];
     FILE *fp = __popen(tmp, "r");
     if (fp == NULL) {
-        ui_print("Unable to execute tar.\n");
+        ui_print("unable to execute tar.\n");
         return -1;
     }
 
@@ -362,13 +362,13 @@ static int tar_extract_wrapper(const char* backup_file_image, const char* backup
 static nandroid_restore_handler get_restore_handler(const char *backup_path) {
     Volume *v = volume_for_path(backup_path);
     if (v == NULL) {
-        ui_print("Unable to find volume.\n");
+        ui_print("unable to find volume.\n");
         return NULL;
     }
     scan_mounted_volumes();
     MountedVolume *mv = find_mounted_volume_by_mount_point(v->mount_point);
     if (mv == NULL) {
-        ui_print("Unable to find mounted volume: %s\n", v->mount_point);
+        ui_print("unable to find mounted volume: %s\n", v->mount_point);
         return NULL;
     }
 
@@ -433,7 +433,7 @@ int nandroid_restore_partition_extended(const char* backup_path, const char* mou
             return 0;
         }
         else {
-            printf("Found new backup image: %s\n", tmp);
+            printf("found new backup image: %s\n", tmp);
         }
 
         // If the fs_type of this volume is "auto" or mount_point is /data
@@ -459,31 +459,31 @@ int nandroid_restore_partition_extended(const char* backup_path, const char* mou
 
     int callback = stat("/sdcard/clockworkmod/.hidenandroidprogress", &file_info) != 0;
 
-    ui_print("Restoring %s...\n", name);
+    ui_print("restoring %s...\n", name);
     if (backup_filesystem == NULL) {
         if (0 != (ret = format_volume(mount_point))) {
-            ui_print("Error while formatting %s!\n", mount_point);
+            ui_print("error while formatting %s!\n", mount_point);
             return ret;
         }
     }
     else if (0 != (ret = format_device(device, mount_point, backup_filesystem))) {
-        ui_print("Error while formatting %s!\n", mount_point);
+        ui_print("error while formatting %s!\n", mount_point);
         return ret;
     }
 
     if (0 != (ret = ensure_path_mounted(mount_point))) {
-        ui_print("Can't mount %s!\n", mount_point);
+        ui_print("can't mount %s!\n", mount_point);
         return ret;
     }
 
     if (restore_handler == NULL)
         restore_handler = get_restore_handler(mount_point);
     if (restore_handler == NULL) {
-        ui_print("Error finding an appropriate restore handler.\n");
+        ui_print("error finding an appropriate restore handler.\n");
         return -2;
     }
     if (0 != (ret = restore_handler(tmp, mount_point, callback))) {
-        ui_print("Error while restoring %s!\n", mount_point);
+        ui_print("error while restoring %s!\n", mount_point);
         return ret;
     }
 
@@ -507,15 +507,15 @@ int nandroid_restore_partition(const char* backup_path, const char* root) {
             strcmp(vol->fs_type, "emmc") == 0) {
         int ret;
         const char* name = basename(root);
-        ui_print("Erasing %s before restore...\n", name);
+        ui_print("erasing %s before restore...\n", name);
         if (0 != (ret = format_volume(root))) {
-            ui_print("Error while erasing %s image!", name);
+            ui_print("error while erasing %s image!", name);
             return ret;
         }
         sprintf(tmp, "%s%s.img", backup_path, root);
-        ui_print("Restoring %s image...\n", name);
+        ui_print("restoring %s image...\n", name);
         if (0 != (ret = restore_raw_partition(vol->fs_type, vol->device, tmp))) {
-            ui_print("Error while flashing %s image!", name);
+            ui_print("error while flashing %s image!", name);
             return ret;
         }
         return 0;
@@ -530,11 +530,11 @@ int nandroid_restore(const char* backup_path, int restore_boot, int restore_syst
     yaffs_files_total = 0;
 
     if (ensure_path_mounted(backup_path) != 0)
-        return print_and_error("Can't mount backup path\n");
+        return print_and_error("can't mount backup path\n");
     
     char tmp[PATH_MAX];
 
-    ui_print("Checking MD5 sums...\n");
+    ui_print("checking MD5 sums...\n");
     sprintf(tmp, "cd %s && md5sum -c nandroid.md5", backup_path);
     if (0 != __system(tmp))
         return print_and_error("MD5 mismatch!\n");
@@ -596,14 +596,14 @@ int nandroid_restore(const char* backup_path, int restore_boot, int restore_syst
     sync();
     ui_set_background(BACKGROUND_ICON_NONE);
     ui_reset_progress();
-    ui_print("\nRestore complete!\n");
+    ui_print("\nrestore complete!\n");
     return 0;
 }
 
 int nandroid_usage()
 {
-    printf("Usage: nandroid backup\n");
-    printf("Usage: nandroid restore <directory>\n");
+    printf("usage: nandroid backup\n");
+    printf("usage: nandroid restore <directory>\n");
     return 1;
 }
 
