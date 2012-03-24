@@ -18,7 +18,8 @@ on init
     mkdir /data
     mkdir /cache
     mount /tmp /tmp tmpfs
-
+#    mount ext4 /dev/block/platform/omap/omap_hsmmc.0/by-name/system /system
+    
 on boot
 
     ifup lo
