@@ -81,8 +81,9 @@ int device_wipe_data();
 #define ITEM_APPLY_CACHE     4
 #define ITEM_NANDROID        4
 #define ITEM_PARTITION       5
-#define ITEM_ADVANCED        6
-#define ITEM_POWEROFF        7
+#define ITEM_POWER	     6
+#define ITEM_ADVANCED        7
+#define ITEM_POWEROFF        8
 
 // Header text to display above the main menu.
 extern char* MENU_HEADERS[];
@@ -97,3 +98,6 @@ void
 set_sdcard_update_bootloader_message();
 
 #endif
+
+static const char *SYS_POWER_CONNECTED  = "/sys/class/power_supply/ac/online";
+static const char *SYS_USB_CONNECTED    = "/sys/class/power_supply/usb/online";
