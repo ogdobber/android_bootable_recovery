@@ -28,6 +28,7 @@ char* MENU_ITEMS[] = { "reboot system now",
                        "wipe cache partition",
                        "backup and restore",
                        "mounts and storage",
+		       "power menu",
                        "advanced",
                        NULL };
 
