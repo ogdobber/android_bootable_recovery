@@ -1,4 +1,4 @@
-/*
+/*k
  * Copyright (C) 2007 The Android Open Source Project
  * Copyright (c) 2010, Code Aurora Forum. All rights reserved.
  *
@@ -650,24 +650,24 @@ wipe_data(int confirm) {
         static char** title_headers = NULL;
 
         if (title_headers == NULL) {
-            char* headers[] = { "Confirm wipe of all user data?",
+            char* headers[] = { "confirm wipe of all user data?",
                                 "  THIS CAN NOT BE UNDONE.",
                                 "",
                                 NULL };
             title_headers = prepend_title((const char**)headers);
         }
 
-        char* items[] = { " No",
-                          " No",
-                          " No",
-                          " No",
-                          " No",
-                          " No",
-                          " No",
-                          " Yes -- delete all user data",   // [7]
-                          " No",
-                          " No",
-                          " No",
+        char* items[] = { " no",
+                          " no",
+                          " no",
+                          " no",
+                          " no",
+                          " no",
+                          " no",
+                          " yes -- delete all user data",   // [7]
+                          " no",
+                          " no",
+                          " no",
                           NULL };
 
         int chosen_item = get_menu_selection(title_headers, items, 1, 0);
@@ -676,7 +676,7 @@ wipe_data(int confirm) {
         }
     }
 
-    ui_print("\n-- Wiping data...\n");
+    ui_print("\n-- wiping data...\n");
     device_wipe_data();
     erase_volume("/data");
     erase_volume("/cache");
@@ -685,7 +685,7 @@ wipe_data(int confirm) {
     }
     erase_volume("/sd-ext");
     erase_volume("/sdcard/.android_secure");
-    ui_print("Data wipe complete.\n");
+    ui_print("data wipe complete.\n");
 }
 
 static void
@@ -717,11 +717,11 @@ prompt_and_wait() {
                 break;
 
             case ITEM_WIPE_CACHE:
-                if (confirm_selection("Confirm wipe?", "Yes - Wipe Cache"))
+                if (confirm_selection("confirm wipe?", "yes - wipe cache"))
                 {
-                    ui_print("\n-- Wiping cache...\n");
+                    ui_print("\n-- wiping cache...\n");
                     erase_volume("/cache");
-                    ui_print("Cache wipe complete.\n");
+                    ui_print("cache wipe complete.\n");
                     if (!ui_text_visible()) return;
                 }
                 break;
@@ -736,6 +736,10 @@ prompt_and_wait() {
 
             case ITEM_PARTITION:
                 show_partition_menu();
+                break;
+
+            case ITEM_POWER:
+                show_power_menu();
                 break;
 
             case ITEM_ADVANCED:
@@ -798,22 +802,25 @@ main(int argc, char **argv) {
     // If these fail, there's not really anywhere to complain...
     freopen(TEMPORARY_LOG_FILE, "a", stdout); setbuf(stdout, NULL);
     freopen(TEMPORARY_LOG_FILE, "a", stderr); setbuf(stderr, NULL);
-    printf("Starting recovery on %s", ctime(&start));
-
+    printf("starting recovery on %s", ctime(&start));
     device_ui_init(&ui_parameters);
     ui_init();
-    ui_print(EXPAND(RECOVERY_VERSION)"\n");
+    char* MODVERSION = get_modversion();
+    char* ANDROID_VERSION = get_android_version();
+    char* RELEASE = get_release();
+    ui_print("recovery started at %s\n\n", ctime(&start));
+    ui_print("current rom: %s\n", MODVERSION);
+    ui_print("android version: %s %s\n", ANDROID_VERSION, RELEASE);    
     load_volume_table();
     process_volumes();
-    LOGI("Processing arguments.\n");
+    LOGI("processing arguments.\n");
     get_args(&argc, &argv);
-
     int previous_runs = 0;
     const char *send_intent = NULL;
     const char *update_package = NULL;
     int wipe_data = 0, wipe_cache = 0;
 
-    LOGI("Checking arguments.\n");
+    LOGI("checking arguments.\n");
     int arg;
     while ((arg = getopt_long(argc, argv, "", OPTIONS, NULL)) != -1) {
         switch (arg) {
@@ -828,7 +835,7 @@ main(int argc, char **argv) {
         case 'c': wipe_cache = 1; break;
         case 't': ui_show_text(1); break;
         case '?':
-            LOGE("Invalid command argument\n");
+            LOGE("invalid command argument\n");
             continue;
         }
     }
@@ -836,7 +843,7 @@ main(int argc, char **argv) {
     LOGI("device_recovery_start()\n");
     device_recovery_start();
 
-    printf("Command:");
+    printf("command:");
     for (arg = 0; arg < argc; arg++) {
         printf(" \"%s\"", argv[arg]);
     }
@@ -865,18 +872,18 @@ main(int argc, char **argv) {
 
     if (update_package != NULL) {
         status = install_package(update_package);
-        if (status != INSTALL_SUCCESS) ui_print("Installation aborted.\n");
+        if (status != INSTALL_SUCCESS) ui_print("installation aborted.\n");
     } else if (wipe_data) {
         if (device_wipe_data()) status = INSTALL_ERROR;
         if (erase_volume("/data")) status = INSTALL_ERROR;
         if (has_datadata() && erase_volume("/datadata")) status = INSTALL_ERROR;
         if (wipe_cache && erase_volume("/cache")) status = INSTALL_ERROR;
-        if (status != INSTALL_SUCCESS) ui_print("Data wipe failed.\n");
+        if (status != INSTALL_SUCCESS) ui_print("data wipe failed.\n");
     } else if (wipe_cache) {
         if (wipe_cache && erase_volume("/cache")) status = INSTALL_ERROR;
-        if (status != INSTALL_SUCCESS) ui_print("Cache wipe failed.\n");
+        if (status != INSTALL_SUCCESS) ui_print("cache wipe failed.\n");
     } else {
-        LOGI("Checking for extendedcommand...\n");
+        LOGI("checking for extendedcommand...\n");
         status = INSTALL_ERROR;  // No command specified
         // we are starting up in user initiated recovery here
         // let's set up some default options
@@ -887,7 +894,7 @@ main(int argc, char **argv) {
         ui_set_background(BACKGROUND_ICON_CLOCKWORK);
         
         if (extendedcommand_file_exists()) {
-            LOGI("Running extendedcommand...\n");
+            LOGI("running extendedcommand...\n");
             int ret;
             if (0 == (ret = run_and_remove_extendedcommand())) {
                 status = INSTALL_SUCCESS;
@@ -897,7 +904,7 @@ main(int argc, char **argv) {
                 handle_failure(ret);
             }
         } else {
-            LOGI("Skipping execution of extendedcommand, file not found...\n");
+            LOGI("skipping execution of extendedcommand, file not found...\n");
         }
     }
 
@@ -914,11 +921,11 @@ main(int argc, char **argv) {
 
     sync();
     if(!poweroff) {
-        ui_print("Rebooting...\n");
+        ui_print("rebooting...\n");
         android_reboot(ANDROID_RB_RESTART, 0, 0);
     }
     else {
-        ui_print("Shutting down...\n");
+        ui_print("shutting down...\n");
         android_reboot(ANDROID_RB_POWEROFF, 0, 0);
     }
     return EXIT_SUCCESS;
